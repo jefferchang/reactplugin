@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "react": "~0.14.3",
-    "marked": "~0.3.5"
+    "marked": "~0.3.5",
+    "jquery": "jQuery#~2.1.4"
   }
 }
