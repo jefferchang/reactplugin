@@ -1,0 +1,21 @@
+{
+  "name": "reactplugin",
+  "homepage": "https://github.com/jefferchang/reactplugin",
+  "authors": [
+    "jefferchang <changyibiao126@163.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "~0.14.3"
+  }
+}
