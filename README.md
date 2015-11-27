@@ -1,5 +1,6 @@
 # reactplugin
-
+# install node
+$  npm install bower -g
 # download all js
 $ bower install
 
