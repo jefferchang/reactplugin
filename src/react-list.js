@@ -8,28 +8,123 @@ require.config({
 });
 define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], function (ReactBootstrap, React, ReactDom, $) {
         var Table = ReactBootstrap.Table;
-
-        const EditUser =React.createClass({
-            editUser:function(e){
-                alert("修改");
-             },
-            render:function(){
+        var Modal = ReactBootstrap.Modal;
+        var Button = ReactBootstrap.Button;
+        var ButtonToolbar =ReactBootstrap.ButtonToolbar;
+        var Input =ReactBootstrap.Input;
+        const EditModal = React.createClass({
+            getInitialState() {
+                return {
+                    style: null
+                };
+            },
+            handelCommit:function(e){
+                debugger;
+                this.props;
+            },
+            validationState:function(name){
+                var obj=eval("this.refs."+name);
+                var  length = obj.getValue().length;
+                var style = 'danger';
+                if (length > 2) style = 'success';
+                else if (length > 1) style = 'warning';
+                return { style };
+            },
+            handleChange:function(e){
+              var style=  this.validationState(e.target.id);
+                this.setState(style);
+                if(style.style != "danger"){
+                    this.props.user.name=e.target.value;
+                }
+            },
+            render() {
                 return (
+                    <Modal  {...this.props} bsSize="large" backdrop="static" aria-labelledby="contained-modal-title-lg">
+                        <Modal.Header closeButton>
+                            <Modal.Title id="contained-modal-title-lg">修改用户</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <form  className="form-horizontal" onSubmit={this.handleSubmit}>
+                                <Input
+                                    type="text"
+                                    ref="name"
+                                    id="name"
+                                    labelClassName="col-xs-2"
+                                    wrapperClassName="col-xs-10"
+                                    label="姓名："
+                                    bsStyle="success"
+                                    placeholder="Your name"
+                                    value={this.props.user.name}
+                                    onChange={this.handleChange}
+                                    />
+                                {' '}
+                                <Input
+                                    type="text"
+                                    id="comment"
+                                    ref="comment"
+                                    labelClassName="col-xs-2"
+                                    wrapperClassName="col-xs-10"
+                                    label="说明："
+                                    bsStyle="success"
+                                    placeholder="Say something..."
+                                    value={this.props.user.comment}
+                                    onChange={this.handleChange}
+                                    />
+                                <Input
+                                    type="text"
+                                    id="age"
+                                    ref="age"
+                                    labelClassName="col-xs-2"
+                                    wrapperClassName="col-xs-10"
+                                    label="备注："
+                                    bsStyle="success"
+                                    placeholder="Say something..."
+                                    value={this.props.user.age}
+                                    onChange={this.handleChange}
+                                    />
+                            </form>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <ButtonToolbar>
+                                <Button bsStyle="primary" onClick={this.handelCommit} >提交</Button>
+                                <Button onClick={this.props.onHide}>Close</Button>
+                            </ButtonToolbar>
+                        </Modal.Footer>
+                    </Modal>
+                );
+            }
+        });
+
+        const EditUser = React.createClass({
+            getInitialState: function () {
+                return {editShow: false};
+            },
+            editClose: function () {
+                this.setState({editShow: false});
+            },
+            editUser: function (e) {
+                this.setState({editShow: true});
+            },
+            render: function () {
+                return (
+                    ReactDom.render(<EditModal show={this.state.editShow} onHide={this.editClose} user={this.props.user}/>, document.getElementById("modal")),
                     <a onClick={this.editUser} className="ButtonCursor">修改</a>
                 )
             }
         });
 
-    const DeleteUser = React.createClass({
-        deleteUser:function(e){
-            alert("删除信息");
-        },
-        render:function(){
-            return (
-                  <a  onClick={this.deleteUser}  className="ButtonCursor" >删除</a>
-            )
-        }
-    });
+        const DeleteUser = React.createClass({
+            deleteUser: function (e) {
+                debugger;
+                var userId = this.props.userId;
+
+            },
+            render: function () {
+                return (
+                    <a onClick={this.deleteUser} className="ButtonCursor">删除</a>
+                )
+            }
+        });
 
 
         const TableInstance = React.createClass({
@@ -42,7 +137,7 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                                 <td>{user.name}</td>
                                 <td>{user.comment}</td>
                                 <td>{user.age}</td>
-                                <td><EditUser/>,<DeleteUser/></td>
+                                <td><EditUser user={user}/>,<DeleteUser userId={user.id}/></td>
                             </tr>
                         );
                     });
@@ -67,7 +162,7 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
             }
         );
         const UserList = React.createClass({
-            getInitialState : function () {
+            getInitialState: function () {
                 return {data: []};
             },
             loadUsersFromServer: function () {
@@ -98,7 +193,7 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
         const PanelInstance = React.createClass({
                 render: function () {
                     return (
-                        <Panel  header="用户列表" bsStyle="primary">
+                        <Panel header="用户列表" bsStyle="primary">
                             <UserList url="/api/users.json"/>
                         </Panel>
                     )
