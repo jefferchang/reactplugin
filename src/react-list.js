@@ -19,22 +19,26 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                 };
             },
             handelCommit:function(e){
-                debugger;
                 this.props;
             },
             validationState:function(name){
                 var obj=eval("this.refs."+name);
                 var  length = obj.getValue().length;
                 var style = 'danger';
-                if (length > 2) style = 'success';
-                else if (length > 1) style = 'warning';
+                if (length > 3) style = 'success';
+                else if (length >= 2) style = 'warning';
                 return { style };
             },
             handleChange:function(e){
-              var style=  this.validationState(e.target.id);
+                var id =e.target.id;
+               var style=  this.validationState(id);
                 this.setState(style);
-                if(style.style != "danger"){
-                    this.props.user.name=e.target.value;
+                if("name"==id){
+                    this.props.user.name= e.target.value;
+                }else if("comment"==id){
+                    this.props.user.comment= e.target.value;
+                }else if("age" == id){
+                    this.props.user.age= e.target.value;
                 }
             },
             render() {
@@ -52,7 +56,7 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                                     labelClassName="col-xs-2"
                                     wrapperClassName="col-xs-10"
                                     label="姓名："
-                                    bsStyle="success"
+                                    bsStyle={this.state.style}
                                     placeholder="Your name"
                                     value={this.props.user.name}
                                     onChange={this.handleChange}
@@ -65,7 +69,7 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                                     labelClassName="col-xs-2"
                                     wrapperClassName="col-xs-10"
                                     label="说明："
-                                    bsStyle="success"
+                                    bsStyle={this.state.style}
                                     placeholder="Say something..."
                                     value={this.props.user.comment}
                                     onChange={this.handleChange}
@@ -77,7 +81,7 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                                     labelClassName="col-xs-2"
                                     wrapperClassName="col-xs-10"
                                     label="备注："
-                                    bsStyle="success"
+                                    bsStyle={this.state.style}
                                     placeholder="Say something..."
                                     value={this.props.user.age}
                                     onChange={this.handleChange}
