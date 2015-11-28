@@ -41,11 +41,9 @@ define('myModule', ['react-bootstrap', 'react', 'react-dom'], function (ReactBoo
         });
         ReactDom.render(React.createElement(ButtonsInstance, null), document.getElementById("app"));
 
-        debugger;
         var Dropdown = ReactBootstrap.Dropdown;
         var Glyphicon = ReactBootstrap.Glyphicon;
         var MenuItem = ReactBootstrap.MenuItem;
-
         const DropdownInstance = React.createClass({displayName: "DropdownInstance",
                 handleSelect: function (e) {
                     alert(1);
@@ -86,6 +84,46 @@ define('myModule', ['react-bootstrap', 'react', 'react-dom'], function (ReactBoo
             }
         );
         ReactDom.render(React.createElement(DropdownInstance, null), document.getElementById("app1"));
+
+
+        debugger;
+        var Navbar = ReactBootstrap.Navbar;
+         var Nav = ReactBootstrap.Nav;
+        var NavItem = ReactBootstrap.NavItem;
+        var NavDropdown = ReactBootstrap.NavDropdown;
+        const NavbarInstance = React.createClass({displayName: "NavbarInstance",
+            render:function(){
+                return (
+                    React.createElement(Navbar, {inverse: true}, 
+                        React.createElement(Navbar.Header, null, 
+                            React.createElement(Navbar.Brand, null, 
+                                React.createElement("a", {href: "#"}, "React-Bootstrap")
+                            ), 
+                            React.createElement(Navbar.Toggle, null)
+                        ), 
+                        React.createElement(Navbar.Collapse, null, 
+                            React.createElement(Nav, null, 
+                                React.createElement(NavItem, {eventKey: 1, href: "#"}, "Link"), 
+                                React.createElement(NavItem, {eventKey: 2, href: "#"}, "Link"), 
+                                React.createElement(NavDropdown, {eventKey: 3, title: "Dropdown", id: "basic-nav-dropdown"}, 
+                                    React.createElement(MenuItem, {eventKey: 3.1}, "Action"), 
+                                    React.createElement(MenuItem, {eventKey: 3.2}, "Another action"), 
+                                    React.createElement(MenuItem, {eventKey: 3.3}, "Something else here"), 
+                                    React.createElement(MenuItem, {divider: true}), 
+                                    React.createElement(MenuItem, {eventKey: 3.3}, "Separated link")
+                                )
+                            ), 
+                            React.createElement(Nav, {pullRight: true}, 
+                                React.createElement(NavItem, {eventKey: 1, href: "#"}, "Link Right"), 
+                                React.createElement(NavItem, {eventKey: 2, href: "#"}, "Link Right")
+                            )
+                        )
+                    )
+                )
+            }
+        }
+        );
+        ReactDom.render(React.createElement(NavbarInstance, null), document.getElementById("app2"));
     }
 );
 require(["myModule"]);

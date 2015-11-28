@@ -41,11 +41,9 @@ define('myModule', ['react-bootstrap', 'react', 'react-dom'], function (ReactBoo
         });
         ReactDom.render(<ButtonsInstance/>, document.getElementById("app"));
 
-        debugger;
         var Dropdown = ReactBootstrap.Dropdown;
         var Glyphicon = ReactBootstrap.Glyphicon;
         var MenuItem = ReactBootstrap.MenuItem;
-
         const DropdownInstance = React.createClass({
                 handleSelect: function (e) {
                     alert(1);
@@ -86,6 +84,46 @@ define('myModule', ['react-bootstrap', 'react', 'react-dom'], function (ReactBoo
             }
         );
         ReactDom.render(<DropdownInstance/>, document.getElementById("app1"));
+
+
+        debugger;
+        var Navbar = ReactBootstrap.Navbar;
+         var Nav = ReactBootstrap.Nav;
+        var NavItem = ReactBootstrap.NavItem;
+        var NavDropdown = ReactBootstrap.NavDropdown;
+        const NavbarInstance = React.createClass({
+            render:function(){
+                return (
+                    <Navbar inverse>
+                        <Navbar.Header>
+                            <Navbar.Brand>
+                                <a href="#">React-Bootstrap</a>
+                            </Navbar.Brand>
+                            <Navbar.Toggle/>
+                        </Navbar.Header>
+                        <Navbar.Collapse>
+                            <Nav>
+                                <NavItem eventKey={1} href="#">Link</NavItem>
+                                <NavItem eventKey={2} href="#">Link</NavItem>
+                                <NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown">
+                                    <MenuItem eventKey={3.1}>Action</MenuItem>
+                                    <MenuItem eventKey={3.2}>Another action</MenuItem>
+                                    <MenuItem eventKey={3.3}>Something else here</MenuItem>
+                                    <MenuItem divider />
+                                    <MenuItem eventKey={3.3}>Separated link</MenuItem>
+                                </NavDropdown>
+                            </Nav>
+                            <Nav pullRight>
+                                <NavItem eventKey={1} href="#">Link Right</NavItem>
+                                <NavItem eventKey={2} href="#">Link Right</NavItem>
+                            </Nav>
+                        </Navbar.Collapse>
+                    </Navbar>
+                )
+            }
+        }
+        );
+        ReactDom.render(<NavbarInstance />, document.getElementById("app2"));
     }
 );
 require(["myModule"]);
