@@ -5,7 +5,7 @@ require.config({
         "react-dom": "./../bower_components/react/react-dom"
     }
 });
-define('myModule', ['react-bootstrap', 'react', 'react-dom'], function (ReactBootstrap, React, ReactDom) {
+define('buttonModule', ['react-bootstrap', 'react', 'react-dom'], function (ReactBootstrap, React, ReactDom) {
         var ButtonToolbar = ReactBootstrap.ButtonToolbar;
         var Button = ReactBootstrap.Button;
 
@@ -126,4 +126,4 @@ define('myModule', ['react-bootstrap', 'react', 'react-dom'], function (ReactBoo
         ReactDom.render(React.createElement(NavbarInstance, null), document.getElementById("app2"));
     }
 );
-require(["myModule"]);
+require(["buttonModule"]);
