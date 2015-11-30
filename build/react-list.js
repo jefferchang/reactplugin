@@ -15,11 +15,20 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
         const EditModal = React.createClass({displayName: "EditModal",
             getInitialState() {
                 return {
-                    style: null
+                    nameStyle: null,
+                    commentStyle: null,
+                    ageStyle: null
                 };
             },
             handelCommit:function(e){
-                this.props;
+                var user = this.props.user;
+                if(user.id!=null){
+                    this.props.commitEdit(user);
+                }else{
+                    this.props.commitAdd(user);
+                }
+
+
             },
             validationState:function(name){
                 var obj=eval("this.refs."+name);
@@ -27,17 +36,19 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                 var style = 'danger';
                 if (length > 3) style = 'success';
                 else if (length >= 2) style = 'warning';
-                return { style };
+                return style;
             },
             handleChange:function(e){
                 var id =e.target.id;
                var style=  this.validationState(id);
-                this.setState(style);
                 if("name"==id){
+                    this.setState({nameStyle: style});
                     this.props.user.name= e.target.value;
                 }else if("comment"==id){
+                    this.setState({commentStyle: style});
                     this.props.user.comment= e.target.value;
                 }else if("age" == id){
+                    this.setState({ageStyle: style});
                     this.props.user.age= e.target.value;
                 }
             },
@@ -56,7 +67,7 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                                     labelClassName: "col-xs-2", 
                                     wrapperClassName: "col-xs-10", 
                                     label: "姓名：", 
-                                    bsStyle: this.state.style, 
+                                    bsStyle: this.state.nameStyle, 
                                     placeholder: "Your name", 
                                     value: this.props.user.name, 
                                     onChange: this.handleChange}
@@ -69,7 +80,7 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                                     labelClassName: "col-xs-2", 
                                     wrapperClassName: "col-xs-10", 
                                     label: "说明：", 
-                                    bsStyle: this.state.style, 
+                                    bsStyle: this.state.commentStyle, 
                                     placeholder: "Say something...", 
                                     value: this.props.user.comment, 
                                     onChange: this.handleChange}
@@ -81,7 +92,7 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                                     labelClassName: "col-xs-2", 
                                     wrapperClassName: "col-xs-10", 
                                     label: "备注：", 
-                                    bsStyle: this.state.style, 
+                                    bsStyle: this.state.ageStyle, 
                                     placeholder: "Say something...", 
                                     value: this.props.user.age, 
                                     onChange: this.handleChange}
@@ -109,19 +120,23 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
             editUser: function (e) {
                 this.setState({editShow: true});
             },
+            commitEdit:function(user){
+                this.props.paramCommitEdit(user);
+                this.setState({editShow: false});
+            },
             render: function () {
                 return (
-                    ReactDom.render(React.createElement(EditModal, {show: this.state.editShow, onHide: this.editClose, user: this.props.user}), document.getElementById("modal")),
-                    React.createElement("a", {onClick: this.editUser, className: "ButtonCursor"}, "修改")
+                    React.createElement("a", {onClick: this.editUser, className: "ButtonCursor"}, "修改", 
+                            React.createElement(EditModal, {show: this.state.editShow, onHide: this.editClose, user: this.props.user, commitEdit: this.commitEdit})
+                    )
                 )
             }
         });
 
         const DeleteUser = React.createClass({displayName: "DeleteUser",
             deleteUser: function (e) {
-                debugger;
                 var userId = this.props.userId;
-
+                this.props.paramCommitDelete(userId);
             },
             render: function () {
                 return (
@@ -129,10 +144,10 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                 )
             }
         });
-
-
         const TableInstance = React.createClass({displayName: "TableInstance",
                 render: function () {
+                    var commitEdit =this.props.paramCommitEdit;
+                    var commitDelete = this.props.paramCommitDelete;
                     var listUsers = this.props.data.map(function (user) {
                         return (
                             React.createElement("tr", {key: user.id}, 
@@ -141,7 +156,10 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                                 React.createElement("td", null, user.name), 
                                 React.createElement("td", null, user.comment), 
                                 React.createElement("td", null, user.age), 
-                                React.createElement("td", null, React.createElement(EditUser, {user: user}), ",", React.createElement(DeleteUser, {userId: user.id}))
+                                React.createElement("td", null, 
+                                    React.createElement(EditUser, {user: user, paramCommitEdit: commitEdit}), ",", 
+                                    React.createElement(DeleteUser, {userId: user.id, paramCommitDelete: commitDelete})
+                                )
                             )
                         );
                     });
@@ -165,46 +183,102 @@ define('listModule', ['react-bootstrap', 'react', 'react-dom', 'jquery'], functi
                 }
             }
         );
+
+
         const UserList = React.createClass({displayName: "UserList",
-            getInitialState: function () {
-                return {data: []};
-            },
-            loadUsersFromServer: function () {
-                $.ajax({
-                    url: this.props.url,
-                    dataType: 'json',
-                    cache: false,
-                    success: function (data) {
-                        this.setState({data: data});
-                    }.bind(this),
-                    error: function (xhr, status, err) {
-                        console.error(this.props.url, status, err.toString());
-                    }.bind(this)
-                });
-            },
-            componentDidMount: function () {
-                this.loadUsersFromServer();
-            },
             render: function () {
                 return (
-                    React.createElement(TableInstance, {data: this.state.data})
-                );
+                            React.createElement(TableInstance, {data: this.props.data, paramCommitEdit: this.props.commitEdit, paramCommitDelete: this.props.commitDelete})
+                 );
             }
         });
 
+        const AddButton = React.createClass({displayName: "AddButton",
+            getInitialState: function () {
+                return {editShow: false,user:{}};
+            },
+            addUser:function(){
+                this.setState({editShow: true});
+            },
+            editClose: function () {
+                this.setState({editShow: false});
+            },
+            commitAdd:function(user){
+                this.props.commitAdd(user);
+                this.setState({editShow: false});
+            },
+
+            render:function(){
+                return (
+                    React.createElement(ButtonToolbar, null, 
+                        React.createElement(Button, {bsStyle: "primary", onClick: this.addUser}, "添加"), 
+                        React.createElement(EditModal, {show: this.state.editShow, onHide: this.editClose, user: this.state.user, commitAdd: this.commitAdd})
+                    )
+                )
+            }
+        });
 
         var Panel = ReactBootstrap.Panel;
         const PanelInstance = React.createClass({displayName: "PanelInstance",
+                getInitialState: function () {
+                    return {data: [],onHide:{},user:{},editShow:false};
+                },
+                editClose: function () {
+                    this.setState({editShow: false});
+                },
+                loadUsersFromServer: function () {
+                    $.ajax({
+                        url: this.props.url,
+                        dataType: 'json',
+                        cache: false,
+                        success: function (data) {
+                            this.setState({data: data});
+                        }.bind(this),
+                        error: function (xhr, status, err) {
+                            console.error(this.props.url, status, err.toString());
+                        }.bind(this)
+                    });
+                },
+                commitAdd:function(user){
+                    var datas = this.state.data;
+                    user.id=new Date().getMilliseconds();
+                    user.key = new Date().getMilliseconds();
+                    datas.push(user);
+                    this.setState({data:datas});
+                },
+                commitEdit:function(usert){
+                    var datas=this.state.data;
+                    datas.map(function (user) {
+                        if(user.id == usert.id){
+                            user = usert;
+                        }
+                    });
+                    this.setState({data:datas});
+                },
+                commitDelete:function(id){
+                    var dataUsers =[];
+                    this.state.data.map(function (user) {
+                        if(user.id != id){
+                            dataUsers.push(user);
+                        }
+                    });
+                    this.setState({data:dataUsers});
+                },
+                componentDidMount: function () {
+                    this.loadUsersFromServer();
+                },
                 render: function () {
                     return (
                         React.createElement(Panel, {header: "用户列表", bsStyle: "primary"}, 
-                            React.createElement(UserList, {url: "/api/users.json"})
+                            React.createElement(UserList, {data: this.state.data, commitEdit: this.commitEdit, commitDelete: this.commitDelete}), 
+                            React.createElement(AddButton, {commitAdd: this.commitAdd})
                         )
                     )
                 }
             }
         );
-        ReactDom.render(React.createElement(PanelInstance, null), document.getElementById("app"));
+        ReactDom.render(React.createElement(PanelInstance, {url: "/api/users.json"}), document.getElementById("app"));
+        ReactDom.render(React.createElement(EditModal, {show: this.state.editShow, onHide: this.state.editClose, user: this.state.user}), document.getElementById("modal"));
     }
 );
 require(["listModule"]);
